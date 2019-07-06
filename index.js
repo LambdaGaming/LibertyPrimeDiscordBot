@@ -13,6 +13,12 @@ client.on( 'message', msg => {
 	if( msg == "/lockdown" ){
 		msg.channel.send( '```diff\n-The mayor has initiated a lockdown! Remain indoors until the lockdown is over.\n```' )
 	}
+	if( msg == "/purge" ){
+		msg.channel.send( '```diff\n-The mayor has activated the purge event!\n```' )
+	}
+	if( msg == "/parade" ){
+		msg.channel.send( '```diff\n-The mayor has activated the parade event!\n```' )
+	}
 } )
 
 client.login( process.env.BOT_TOKEN )
