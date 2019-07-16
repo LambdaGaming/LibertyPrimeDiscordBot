@@ -11,12 +11,21 @@ const badwords = [
 	"lennin",
 	"putin",
 	"vodka",
-	"commie"
+	"commie",
+	"russia",
+	"cuba",
+	"vietnam",
+	"mao",
+	"castro",
+	"bernie",
+	"kim",
+	"korea",
+	"california"
 ]
 const quotes = [
 	"Weapons: hot.",
 	"Mission: the destruction of any and all Chinese communists.",
-	"American will never fall to communist invasion.",
+	"America will never fall to communist invasion.",
 	"Obstruction detected. Composition: titanium alloy supplemented by photonic resonance barrier.",
 	"Probability of mission hindrance: zero percent.",
 	"Democracy.... is non-negotiable.",
@@ -32,7 +41,7 @@ const quotes = [
 
 client.on('ready', () => {
 	console.log( `Logged in as ${client.user.tag}!` )
-	client.user.setActivity( 'Fallout 3' )
+	client.user.setActivity( `Fallout ${Math.floor( Math.random() * ( 4 - 3 + 1 ) + 3 ).toString()}` )
 	const channel = client.channels.find( "name", "general-kenobi" )
 	channel.send( "LIBERTY PRIME IS ONLINE." )
 })
