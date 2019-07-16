@@ -3,21 +3,36 @@ require('dotenv').config()
 
 const Discord = require('discord.js')
 const client = new Discord.Client()
+const badwords = [
+	"communism",
+	"china",
+	"ussr",
+	"stalin",
+	"lennin",
+	"putin",
+	"vodka",
+	"commie"
+]
+const quotes = [
+	"DEATH IS A PREFERRABLE ALTERNATIVE TO COMMUNISM!"
+]
 
 client.on('ready', () => {
 	console.log( `Logged in as ${client.user.tag}!` )
-	client.user.setActivity( 'CityRP on rp_rockford_v2b' )
+	client.user.setActivity( 'Fallout 3' )
 })
 
 client.on( 'message', msg => {
-	if( msg == "/lockdown" ){
-		msg.channel.send( '```diff\n-The mayor has initiated a lockdown! Remain indoors until the lockdown is over.\n```' )
-	}
-	if( msg == "/purge" ){
-		msg.channel.send( '```diff\n-The mayor has activated the purge event!\n```' )
-	}
-	if( msg == "/parade" ){
-		msg.channel.send( '```diff\n-The mayor has activated the parade event!\n```' )
+	var usertag = msg.member.id
+	var split = msg.content.split( " " )
+	for( i=0; i < split.length; i++ ){
+		if( usertag == process.env.BOT_ID ){
+			return
+		}
+		console.log( split[i] )
+		if( badwords.includes( split[i].toLowerCase() ) ){
+			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ] )
+		}
 	}
 } )
 
