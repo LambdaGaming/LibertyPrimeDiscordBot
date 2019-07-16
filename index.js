@@ -49,13 +49,14 @@ client.on('ready', () => {
 client.on( 'message', msg => {
 	var usertag = msg.member.id
 	var split = msg.content.split( " " )
+	var cooldown = 0
 	for( i=0; i < split.length; i++ ){
-		if( usertag == process.env.BOT_ID ){
+		if( usertag == process.env.BOT_ID || cooldown > Date.now() ){
 			return
 		}
-		console.log( split[i] )
 		if( badwords.includes( split[i].toLowerCase() ) ){
 			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
+			cooldown = Date.now() + 1
 		}
 	}
 } )
