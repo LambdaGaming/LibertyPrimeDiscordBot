@@ -20,7 +20,8 @@ const badwords = [
 	"bernie",
 	"kim",
 	"korea",
-	"california"
+	"california",
+	"red"
 ]
 const quotes = [
 	"Weapons: hot.",
@@ -36,7 +37,8 @@ const quotes = [
 	"Communism is a temporary setback on the road to freedom.",
 	"Embrace democracy or you will be eradicated.",
 	"Democracy will never be defeated.",
-	"Voice module online. Audio functionality test initialized. Designation: Liberty Prime. Mission: the liberation of Anchorage, Alaska. Primary Targets: any and all Red Chinese invaders. Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
+	"Primary Targets: any and all Red Chinese invaders.",
+	"Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
 ]
 
 client.on('ready', () => {
