@@ -14,12 +14,26 @@ const badwords = [
 	"commie"
 ]
 const quotes = [
-	"DEATH IS A PREFERRABLE ALTERNATIVE TO COMMUNISM!"
+	"Weapons: hot.",
+	"Mission: the destruction of any and all Chinese communists.",
+	"American will never fall to communist invasion.",
+	"Obstruction detected. Composition: titanium alloy supplemented by photonic resonance barrier.",
+	"Probability of mission hindrance: zero percent.",
+	"Democracy.... is non-negotiable.",
+	"Death is a preferable alternative to communism.",
+	"Communist detected on American soil. Lethal force engaged.",
+	"Tactical assessment: Red Chinese victory—impossible.",
+	"Communism is the very definition of failure.",
+	"Communism is a temporary setback on the road to freedom.",
+	"Embrace democracy or you will be eradicated.",
+	"Democracy will never be defeated.",
+	"Voice module online. Audio functionality test initialized. Designation: Liberty Prime. Mission: the liberation of Anchorage, Alaska. Primary Targets: any and all Red Chinese invaders. Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
 ]
 
 client.on('ready', () => {
 	console.log( `Logged in as ${client.user.tag}!` )
 	client.user.setActivity( 'Fallout 3' )
+	client.channels.get( "583310705143316553" ).send( "LIBERTY PRIME IS ONLINE." )
 })
 
 client.on( 'message', msg => {
@@ -31,7 +45,7 @@ client.on( 'message', msg => {
 		}
 		console.log( split[i] )
 		if( badwords.includes( split[i].toLowerCase() ) ){
-			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ] )
+			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
 		}
 	}
 } )
