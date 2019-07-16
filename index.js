@@ -33,7 +33,8 @@ const quotes = [
 client.on('ready', () => {
 	console.log( `Logged in as ${client.user.tag}!` )
 	client.user.setActivity( 'Fallout 3' )
-	client.channels.get( "583310705143316553" ).send( "LIBERTY PRIME IS ONLINE." )
+	const channel = client.channels.find( "name", "general-kenobi" )
+	channel.send( "LIBERTY PRIME IS ONLINE." )
 })
 
 client.on( 'message', msg => {
