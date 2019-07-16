@@ -21,7 +21,9 @@ const badwords = [
 	"kim",
 	"korea",
 	"california",
-	"red"
+	"red",
+	"cyka",
+	"blyat"
 ]
 const quotes = [
 	"Weapons: hot.",
