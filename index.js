@@ -55,15 +55,18 @@ client.on( 'message', msg => {
 	var usertag = msg.member.id
 	var split = msg.content.split( " " )
 	var cooldown = 0
+	if( cooldown > Date.now() ){
+		return
+	}
 	for( i=0; i < split.length; i++ ){
-		if( usertag == process.env.BOT_ID || cooldown > Date.now() ){
+		if( usertag == process.env.BOT_ID ){
 			return
 		}
 		if( badwords.includes( split[i].toLowerCase() ) ){
 			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
-			cooldown = Date.now() + 1
 		}
 	}
+	cooldown = Date.now() + 1
 } )
 
 client.login( process.env.BOT_TOKEN )
