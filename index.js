@@ -24,7 +24,8 @@ const badwords = [
 	"red",
 	"cyka",
 	"blyat",
-	"communist"
+	"communist",
+	"gulag"
 ]
 const quotes = [
 	"Weapons: hot.",
@@ -51,10 +52,10 @@ client.on('ready', () => {
 	channel.send( "LIBERTY PRIME IS ONLINE." )
 })
 
+var cooldown = 0
 client.on( 'message', msg => {
 	var usertag = msg.member.id
 	var split = msg.content.split( " " )
-	var cooldown = 0
 	if( cooldown > Date.now() ){
 		return
 	}
