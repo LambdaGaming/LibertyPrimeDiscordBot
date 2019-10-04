@@ -48,8 +48,15 @@ const quotes = [
 client.on('ready', () => {
 	console.log( `Logged in as ${client.user.tag}!` )
 	client.user.setActivity( `Fallout ${Math.floor( Math.random() * ( 4 - 3 + 1 ) + 3 ).toString()}` )
-	const channel = client.channels.find( "name", "general-kenobi" )
-	channel.send( "LIBERTY PRIME IS ONLINE." )
+
+	const channel = client.channels.find( channel => channel.name == "general" )
+	const channel_meme = client.channels.find( channel => channel.name == "general-kenobi" )
+	if( channel_meme ){
+		channel_meme.send( "LIBERTY PRIME IS ONLINE." )
+	}
+	else if( channel ){
+		channel.send( "LIBERTY PRIME IS ONLINE." )
+	}
 })
 
 var cooldown = 0
