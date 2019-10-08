@@ -25,7 +25,15 @@ const badwords = [
 	"cyka",
 	"blyat",
 	"communist",
-	"gulag"
+	"gulag",
+	"chinese",
+	"vietnamese",
+	"korean",
+	"californian",
+	"reds",
+	"communists",
+	"gulags",
+	"vodkas"
 ]
 const quotes = [
 	"Weapons: hot.",
@@ -36,7 +44,7 @@ const quotes = [
 	"Democracy.... is non-negotiable.",
 	"Death is a preferable alternative to communism.",
 	"Communist detected on American soil. Lethal force engaged.",
-	"Tactical assessment: Red Chinese victory—impossible.",
+	"Tactical assessment: Red Chinese victory-impossible.",
 	"Communism is the very definition of failure.",
 	"Communism is a temporary setback on the road to freedom.",
 	"Embrace democracy or you will be eradicated.",
