@@ -76,13 +76,13 @@ client.on( 'message', msg => {
 	if( usertag == process.env.BOT_ID ){
 		return
 	}
-	if( msg.content.match( "hong kong" ) && !Boolean( cooldown ) ){
+	if( msg.content.toLowerCase().match( "hong kong" ) && !cooldown ){
 		msg.channel.send( "Liberate Hong Kong, revolution of our age!".toUpperCase() )
 		cooldown = true
 		return
 	}
 	badwords.forEach( function( item, index ){
-		if( msg.content.toLowerCase().match( item ) && !Boolean( cooldown ) ){
+		if( msg.content.toLowerCase().match( item ) && !cooldown ){
 			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
 			cooldown = true
 		}
