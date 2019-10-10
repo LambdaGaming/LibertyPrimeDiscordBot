@@ -65,7 +65,7 @@ client.on('ready', () => {
 		channel_meme.send( "LIBERTY PRIME IS ONLINE." )
 	}
 	else if( channel ){
-		//channel.send( "LIBERTY PRIME IS ONLINE." )
+		channel.send( "LIBERTY PRIME IS ONLINE." )
 	}
 } )
 
