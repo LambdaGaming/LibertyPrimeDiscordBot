@@ -72,7 +72,6 @@ client.on('ready', () => {
 var cooldown = false
 client.on( 'message', msg => {
 	var usertag = msg.member.id
-	var split = msg.content.split( " " )
 	if( usertag == process.env.BOT_ID ){
 		return
 	}
