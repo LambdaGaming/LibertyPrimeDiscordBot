@@ -8,12 +8,11 @@
     "dev": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "LambdaGaming",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "dotenv": "^8.0.0",
-    "giphy-random": "^2.0.8"
+    "dotenv": "^8.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
