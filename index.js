@@ -33,8 +33,10 @@ const badwords = [
 	"reds",
 	"communists",
 	"gulags",
-	"vodkas"
+	"vodkas",
+	"blizzard"
 ]
+
 const quotes = [
 	"Weapons: hot.",
 	"Mission: the destruction of any and all Chinese communists.",
@@ -54,8 +56,8 @@ const quotes = [
 ]
 
 client.on('ready', () => {
-	console.log( `Logged in as ${client.user.tag}!` )
-	client.user.setActivity( `Fallout ${Math.floor( Math.random() * ( 4 - 3 + 1 ) + 3 ).toString()}` )
+	console.log( "Logged in as " + client.user.tag + "!" )
+	client.user.setActivity( "Fallout " + Math.floor( Math.random() * ( 4 - 3 + 1 ) + 3 ).toString() )
 
 	const channel = client.channels.find( channel => channel.name == "general" )
 	const channel_meme = client.channels.find( channel => channel.name == "general-kenobi" )
@@ -63,26 +65,32 @@ client.on('ready', () => {
 		channel_meme.send( "LIBERTY PRIME IS ONLINE." )
 	}
 	else if( channel ){
-		channel.send( "LIBERTY PRIME IS ONLINE." )
+		//channel.send( "LIBERTY PRIME IS ONLINE." )
 	}
-})
+} )
 
-var cooldown = 0
+var cooldown = false
 client.on( 'message', msg => {
 	var usertag = msg.member.id
 	var split = msg.content.split( " " )
 	if( cooldown > Date.now() ){
 		return
 	}
-	for( i=0; i < split.length; i++ ){
-		if( usertag == process.env.BOT_ID ){
-			return
-		}
-		if( badwords.includes( split[i].toLowerCase() ) ){
-			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
-		}
+	if( usertag == process.env.BOT_ID ){
+		return
 	}
-	cooldown = Date.now() + 1
+	if( msg.content.match( "hong kong" ) && !Boolean( cooldown ) ){
+		msg.channel.send( "Liberate Hong Kong, revolution of our age!".toUpperCase() )
+		cooldown = true
+		return
+	}
+	badwords.forEach( function( item, index ){
+		if( msg.content.toLowerCase().match( item ) && !Boolean( cooldown ) ){
+			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
+			cooldown = true
+		}
+	} )
+	cooldown = false
 } )
 
 client.login( process.env.BOT_TOKEN )
