@@ -73,9 +73,6 @@ var cooldown = false
 client.on( 'message', msg => {
 	var usertag = msg.member.id
 	var split = msg.content.split( " " )
-	if( cooldown > Date.now() ){
-		return
-	}
 	if( usertag == process.env.BOT_ID ){
 		return
 	}
