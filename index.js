@@ -82,6 +82,9 @@ client.on( 'message', msg => {
 	}
 	badwords.forEach( function( item, index ){
 		if( msg.content.toLowerCase().match( item ) && !cooldown ){
+			if( msg.content.toLowerCase().match( "http" ) ){
+				return
+			}
 			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
 			cooldown = true
 		}
