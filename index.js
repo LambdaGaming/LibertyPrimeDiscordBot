@@ -55,36 +55,38 @@ const quotes = [
 	"Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
 ]
 
-client.on('ready', () => {
+client.on( 'ready', () => {
 	console.log( "Logged in as " + client.user.tag + "!" )
 	client.user.setActivity( "Fallout " + Math.floor( Math.random() * ( 4 - 3 + 1 ) + 3 ).toString() )
 
 	const channel = client.channels.find( channel => channel.name == "general" )
 	const channel_meme = client.channels.find( channel => channel.name == "general-kenobi" )
-	if( channel_meme ){
+	if ( channel_meme )
+	{
 		channel_meme.send( "LIBERTY PRIME IS ONLINE." )
 	}
-	else if( channel ){
+	else if ( channel )
+	{
 		channel.send( "LIBERTY PRIME IS ONLINE." )
 	}
 } )
 
 var cooldown = false
-client.on( 'message', msg => {
+client.on( 'message', msg =>
+{
 	var usertag = msg.member.id
-	if( usertag == process.env.BOT_ID ){
-		return
-	}
-	if( msg.content.toLowerCase().match( "hong kong" ) && !cooldown ){
+	if ( usertag == process.env.BOT_ID ) return
+	if ( msg.content.toLowerCase().match( "hong kong" ) && !cooldown )
+	{
 		msg.channel.send( "Liberate Hong Kong, revolution of our age!".toUpperCase() )
 		cooldown = true
 		return
 	}
-	badwords.forEach( function( item, index ){
-		if( msg.content.toLowerCase().match( item ) && !cooldown ){
-			if( msg.content.toLowerCase().match( "http" ) ){
-				return
-			}
+	badwords.forEach( function( item, index )
+	{
+		if ( msg.content.toLowerCase().match( item ) && !cooldown )
+		{
+			if ( msg.content.toLowerCase().match( "http" ) ) return
 			msg.channel.send( quotes[ Math.floor( Math.random() * quotes.length ) ].toUpperCase() )
 			cooldown = true
 		}
