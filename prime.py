@@ -17,4 +17,4 @@ try:
     client = MyClient()
     client.run( token.read() )
 except:
-    print( "Failed to open token file. Make sure your path is correct." )
+    print( "Failed to open token file. File doesn't exist." )
