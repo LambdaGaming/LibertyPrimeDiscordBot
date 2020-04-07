@@ -60,7 +60,10 @@ class MyClient( discord.Client ):
 		print( 'Logged in as {0}!'.format( self.user ) )
 
 		for chan in client.get_all_channels():
-			if chan.name == "general" or chan.name == "general-kenobi":
+			if chan.name == "general-kenobi":
+				await chan.send( "LIBERTY PRIME IS ONLINE." )
+				break
+			if chan.name == "general":
 				await chan.send( "LIBERTY PRIME IS ONLINE." )
 
 	async def on_message( self, message ):
