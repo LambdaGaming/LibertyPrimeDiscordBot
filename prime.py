@@ -59,12 +59,12 @@ class MyClient( discord.Client ):
 		await client.change_presence( activity = discord.Game( name = "Fallout " + randfallout ) )
 		print( 'Logged in as {0}!'.format( self.user ) )
 
-		for chan in client.get_all_channels():
+		""" for chan in client.get_all_channels(): # Disabled for now due to it spamming chat whenever the bot reconnects
 			if chan.name == "general-kenobi":
 				await chan.send( "LIBERTY PRIME IS ONLINE." )
 				break
 			if chan.name == "general":
-				await chan.send( "LIBERTY PRIME IS ONLINE." )
+				await chan.send( "LIBERTY PRIME IS ONLINE." ) """
 
 	async def on_message( self, message ):
 		if message.author.bot: return
