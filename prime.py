@@ -30,8 +30,9 @@ Quotes = [
 	
 	Initiating the game:
 		Discord IDs from an external whitelist will be able to start the game using the
-		'!wof start' command. Any player who has access to the dedicated discord channel
-		will be able to participate in the game, even after it has started.
+		'!wof start' command. Anyone in the Discord will be able to participate in the game,
+		even after it has started. While the game is running, normal Liberty Prime functions
+		will not work and he will not respond to any keywords.
 
 	Playing the game:
 		A single word will be selected from the random word generator and a player will have
@@ -46,12 +47,11 @@ Quotes = [
 		CityRP or becoming a class of their choice on SCP:SL.
 """
 
-WoFActive = False
-WoFGame = None
 class WoF:
-	def __init__( self, word, players ):
+	def __init__( self, word, players, letters ):
 		self.word = word
 		self.players = players
+		self.letters = letters
 		global WoFActive
 		WoFActive = True
 	
@@ -63,17 +63,20 @@ class WoF:
 	
 	def getPlayers( self ):
 		return self.players
-	
-	def setPlayers( self, players ):
-		self.players = players
 
 	def addPlayer( self, player ):
 		players.append( player )
 
-	def nextWord():
+	def nextWord( self ):
 		nextWord = randWord.get_random_word()
 		self.setWord( nextWord )
 		return nextWord
+	
+	def getLetters( self ):
+		return self.letters
+
+	def addLetter( self, letter ):
+		letters.append( letter )
 
 	class WoF_Player:
 		def __init__( self, id, points ):
@@ -92,6 +95,17 @@ class WoF:
 		def setPoints( self, points ):
 			self.points = points
 
+		@classmethod
+		def getAllPlayers( cls ):
+			players = set()
+			for ref in cls._instances:
+				ply = ref()
+				if ply is not None:
+					yield ply
+				else:
+					players.add( ply )
+			cls._instances -= ply
+
 class MyClient( discord.Client ):
 	async def on_ready( self ):
 		randfallout = str( random.randint( 3, 4 ) )
@@ -99,6 +113,8 @@ class MyClient( discord.Client ):
 		print( 'Logged in as {0}!'.format( self.user ) )
 
 	async def on_message( self, message ):
+		global WoFActive
+		global WoFGame
 		if message.author.bot: return
 		split = message.content.split( " " )
 		lower = message.content.lower()
@@ -106,7 +122,15 @@ class MyClient( discord.Client ):
 			if split[0] == "!wof":
 				try:
 					if split[1] == " ":
-						await message.channel.send( "List of available Wheel of Fortune commands: end, nextword" )
+						await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword" )
+					elif split[1] == "guessletter":
+						try:
+							if split[2] == " " or not split[2].isalpha() or len( split[2] ) > 1:
+								await message.channel.send( "Please input a single letter for the guessletter command." )
+							else:
+								if not 
+						except:
+							await message.channel.send( "Please input a single letter for the guessletter command." )
 					elif split[1] == "end":
 						del WoFGame
 						WoFActive = False
@@ -114,17 +138,17 @@ class MyClient( discord.Client ):
 					elif split[1] == "nextword":
 						WoFGame.nextWord()
 						await message.channel.send( "Word has been forcibly changed to " + WoFGame.getWord() + "." )
-				except IndexError:
-					await message.channel.send( "List of available Wheel of Fortune commands: end, nextword" )
+				except:
+					await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword" )
 		else:
 			if split[0] == "!wof":
 				try:
 					if split[1] == " ":
 						await message.channel.send( "List of available Wheel of Fortune commands: start" )
 					elif split[1] == "start":
-						global WoFGame
 						WoFGame = WoF( randWord.get_random_word(), [] )
-				except IndexError:
+						await message.channel.send( "WHEEL OF FORTUNE MODE ACTIVATED" )
+				except:
 					await message.channel.send( "List of available Wheel of Fortune commands: start" )
 			if "hong kong" in lower:
 				await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
