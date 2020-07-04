@@ -1,8 +1,7 @@
 import discord
 import random
-import threading
-from random_word import RandomWords
-randWord = RandomWords()
+import json
+import requests
 
 BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao", "castro", "bernie", "kim", "korea", "california", "red", "cyka", "blyat", "communist", "gulag", "chinese", "vietnamese", "korean", "californian", "reds", "communists", "gulags", "vodkas", "blizzard" ]
 
@@ -47,6 +46,12 @@ Quotes = [
 		CityRP or becoming a class of their choice on SCP:SL.
 """
 
+def getRandomWord():
+	url = requests.get( "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json" ).json()
+	nextWord = random.choice( list( url ) )
+	return nextWord
+
+WoFActive = False
 class WoF:
 	def __init__( self, word, players, letters ):
 		self.word = word
@@ -65,18 +70,32 @@ class WoF:
 		return self.players
 
 	def addPlayer( self, player ):
-		players.append( player )
+		self.players.append( player )
 
 	def nextWord( self ):
-		nextWord = randWord.get_random_word()
-		self.setWord( nextWord )
-		return nextWord
+		randomWord = getRandomWord()
+		self.setWord( randomWord )
+		return randomWord
 	
 	def getLetters( self ):
 		return self.letters
 
 	def addLetter( self, letter ):
-		letters.append( letter )
+		self.letters.append( letter.lower() )
+
+	def getFormattedWord( self ):
+		word = self.getWord()
+		if not self.getLetters():
+			for letter in word:
+				word = word.replace( letter, "_" )
+			return word
+		for i in self.getLetters():
+			if not i in self.getWord():
+				word = word.replace( i, "_" )
+			else:
+				for letter in word:
+					word = word.replace( letter, i )
+		return word
 
 	class WoF_Player:
 		def __init__( self, id, points ):
@@ -118,8 +137,13 @@ class MyClient( discord.Client ):
 		if message.author.bot: return
 		split = message.content.split( " " )
 		lower = message.content.lower()
+		if message.content == "!wof test":
+			WoFGame = WoF( getRandomWord(), [], [] )
+			WoFGame.addLetter( "E" )
+			await message.channel.send( "Word format test: " + WoFGame.getFormattedWord() )
+			return
 		if WoFActive:
-			if split[0] == "!wof":
+			if split[0] == "!wof": #TODO: add check to external whitelist so only certain Discord IDs can use this command
 				try:
 					if split[1] == " ":
 						await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword" )
@@ -128,16 +152,33 @@ class MyClient( discord.Client ):
 							if split[2] == " " or not split[2].isalpha() or len( split[2] ) > 1:
 								await message.channel.send( "Please input a single letter for the guessletter command." )
 							else:
-								if not 
+								if not split[2] in WoFGame.getLetters():
+									await message.channel.send( "Guess letters so far: " + WoFGame.getFormattedWord() )
+								else:
+									await message.channel.send( "Letter '" + split[2].upper() + "' has already been guessed." )
 						except:
 							await message.channel.send( "Please input a single letter for the guessletter command." )
+					elif split[1] == "guessword":
+						try:
+							if split[2] == " " or not split[2].isalpha():
+								await message.channel.send( "Please input a word without numbers or special characters." )
+							else:
+								if split[2].lower() == WoFGame.getWord().lower():
+									await message.channel.send( message.author.name + " has guessed the correct word and has recived 1 point!" )
+									WoFGame.nextWord()
+									await message.channel.send( "Next word: " + WoFGame.getFormattedWord() )
+									#TODO: make a player instance if one doesn't already exist and give that player a point
+								else:
+									await message.channel.send( "The word you have guessed is incorrect." )
+						except:
+							await message.channel.send( "Please input a word without numbers or special characters." )
 					elif split[1] == "end":
 						del WoFGame
 						WoFActive = False
 						await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations." )
 					elif split[1] == "nextword":
 						WoFGame.nextWord()
-						await message.channel.send( "Word has been forcibly changed to " + WoFGame.getWord() + "." )
+						await message.channel.send( "Word has been forcibly changed to " + WoFGame.getFormattedWord() + "." )
 				except:
 					await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword" )
 		else:
@@ -146,8 +187,11 @@ class MyClient( discord.Client ):
 					if split[1] == " ":
 						await message.channel.send( "List of available Wheel of Fortune commands: start" )
 					elif split[1] == "start":
-						WoFGame = WoF( randWord.get_random_word(), [] )
-						await message.channel.send( "WHEEL OF FORTUNE MODE ACTIVATED" )
+						try:
+							WoFGame = WoF( getRandomWord(), [], [] )
+							await message.channel.send( "WHEEL OF FORTUNE MODE ACTIVATED" )
+						except:
+							await message.channel.send( "Something went wrong with the random word generator. Aborting." )
 				except:
 					await message.channel.send( "List of available Wheel of Fortune commands: start" )
 			if "hong kong" in lower:
@@ -163,4 +207,4 @@ try:
 	client = MyClient()
 	client.run( token.read() )
 except:
-	print( "Failed to open token file. File doesn't exist." )
+	print( "Failed to read token file. Either the file doesn't exist or the token format is incorrect." )
