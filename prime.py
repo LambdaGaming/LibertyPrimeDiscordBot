@@ -83,18 +83,17 @@ class WoF:
 	def addLetter( self, letter ):
 		self.letters.append( letter.lower() )
 
-	def getFormattedWord( self ):
-		word = self.getWord()
+	def getFormattedWord( self, word ):
 		if not self.getLetters():
 			for letter in word:
-				word = word.replace( letter, "_" )
-			return word
-		for i in self.getLetters():
-			if not i in self.getWord():
-				word = word.replace( i, "_" )
-			else:
-				for letter in word:
-					word = word.replace( letter, i )
+				word = word.replace( letter, "_" ) # FIXME: This prints 1-3 underscores no matter the length of the word, but outside of this environment it works correctly
+		else:
+			letters = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ]
+			for i in self.getLetters():
+				letters.remove( i )
+			for i in letters:
+				if i in word:
+					word = word.replace( i, "_" )
 		return word
 
 	class WoF_Player:
@@ -140,7 +139,7 @@ class MyClient( discord.Client ):
 		if message.content == "!wof test":
 			WoFGame = WoF( getRandomWord(), [], [] )
 			WoFGame.addLetter( "E" )
-			await message.channel.send( "Word format test: " + WoFGame.getFormattedWord() )
+			await message.channel.send( "Word format test: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
 			return
 		if WoFActive:
 			if split[0] == "!wof": #TODO: add check to external whitelist so only certain Discord IDs can use this command
