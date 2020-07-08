@@ -178,7 +178,7 @@ class MyClient( discord.Client ):
 		split = message.content.split( " " )
 		lower = message.content.lower()
 		if WoFActive:
-			if split[0] == "!wof": #TODO: add check to external whitelist so only certain Discord IDs can use this command
+			if split[0] == "!wof":
 				WoFGame.createPlayer( message.author.id )
 				MessagePlayer = WoFGame.getPlayerByID( message.author.id )
 				if 1 not in range( -len( split ), len( split ) ) or split[1] == " ":
@@ -217,10 +217,26 @@ class MyClient( discord.Client ):
 						MessagePlayer.removePoints( 1 )
 						await message.channel.send( message.author.name + " has incorrectly guessed the word and lost 1 point!" )
 				elif split[1] == "end":
+					whitelist = open( "whitelist.txt", "r" )
+					allowed = False
+					for ids in whitelist:
+						if ids == str( message.author.id ):
+							allowed = True
+					if not allowed:
+						await message.channel.send( message.author.name + ", you do not have permission to use the end command." )
+						return
 					del WoFGame
 					WoFActive = False
 					await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations." )
 				elif split[1] == "nextword":
+					whitelist = open( "whitelist.txt", "r" )
+					allowed = False
+					for ids in whitelist:
+						if ids == str( message.author.id ):
+							allowed = True
+					if not allowed:
+						await message.channel.send( message.author.name + ", you do not have permission to use the nextword command." )
+						return
 					WoFGame.nextWord()
 					await message.channel.send( "Word has been forcibly changed to " + WoFGame.getFormattedWord( WoFGame.getWord() ) + "." )
 				elif split[1] == "points":
@@ -241,6 +257,14 @@ class MyClient( discord.Client ):
 					await message.channel.send( "List of available Wheel of Fortune commands: start" )
 					return
 				if split[1] == "start":
+					whitelist = open( "whitelist.txt", "r" )
+					allowed = False
+					for ids in whitelist:
+						if ids == str( message.author.id ):
+							allowed = True
+					if not allowed:
+						await message.channel.send( message.author.name + ", you do not have permission to use the start command." )
+						return
 					try:
 						WoFGame = WoF( getRandomWord(), [], [] )
 						await message.channel.send( "WHEEL OF FORTUNE MODE ACTIVATED\nWord: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
@@ -256,7 +280,7 @@ class MyClient( discord.Client ):
 					break
 
 try:
-	token = open( "token.txt" )
+	token = open( "token.txt", "r" )
 	client = MyClient()
 	client.run( token.read() )
 except:

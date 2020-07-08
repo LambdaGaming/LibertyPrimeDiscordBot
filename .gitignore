@@ -1,6 +1,7 @@
 
-# Discord bot token file
+# Bot files
 token.txt
+whitelist.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
