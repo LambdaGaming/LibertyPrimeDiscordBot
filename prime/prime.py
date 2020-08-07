@@ -45,7 +45,7 @@ class MyClient( discord.Client ):
 					break
 
 try:
-	token = open( "token.txt", "r" )
+	token = open( "settings/token.txt", "r" )
 	client = MyClient()
 	client.run( token.read() )
 except Exception as e:

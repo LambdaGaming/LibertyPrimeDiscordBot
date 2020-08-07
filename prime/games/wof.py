@@ -185,7 +185,7 @@ async def checkChatMessage( message ):
 					MessagePlayer.removePoints( 1 )
 					await message.channel.send( message.author.name + " has incorrectly guessed the word and lost 1 point!" )
 			elif split[1] == "end":
-				whitelist = open( "whitelist.txt", "r" )
+				whitelist = open( "settings/whitelist.txt", "r" )
 				allowed = False
 				for ids in whitelist:
 					if ids == str( message.author.id ):
@@ -197,7 +197,7 @@ async def checkChatMessage( message ):
 				config.WoFActive = False
 				await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations." )
 			elif split[1] == "nextword":
-				whitelist = open( "whitelist.txt", "r" )
+				whitelist = open( "settings/whitelist.txt", "r" )
 				allowed = False
 				for ids in whitelist:
 					if ids == str( message.author.id ):
@@ -226,7 +226,7 @@ async def checkChatMessage( message ):
 				await message.channel.send( "List of available Wheel of Fortune commands: start" )
 				return False
 			if split[1] == "start":
-				whitelist = open( "whitelist.txt", "r" )
+				whitelist = open( "settings/whitelist.txt", "r" )
 				allowed = False
 				for ids in whitelist:
 					if ids == str( message.author.id ):
