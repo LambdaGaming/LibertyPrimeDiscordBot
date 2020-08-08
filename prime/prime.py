@@ -34,8 +34,10 @@ class MyClient( discord.Client ):
 	async def on_message( self, message ):
 		if message.author.bot: return
 		lower = message.content.lower()
-		WoFActiveLocal = await wof.checkChatMessage( message )
-		if not WoFActiveLocal:
+
+		await wof.checkChatMessage( message ) # Check to see if the chat sent is for a minigame
+
+		if not config.GameActive:
 			if "hong kong" in lower:
 				await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
 				return
