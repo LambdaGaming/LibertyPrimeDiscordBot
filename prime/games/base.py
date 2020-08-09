@@ -1,3 +1,5 @@
+from games import pointshop
+
 class GameBase( object ):
 	def __init__( self, players ):
 		self.players = players
@@ -10,36 +12,31 @@ class GameBase( object ):
 
 	def createPlayer( self, ply ):
 		plyexists = False
-		for ply in self.getPlayers():
-			if ply.getID() == id:
-				plyexists = True
-				break
-		if not plyexists:
+		if ply not in self.getPlayers():
 			self.addPlayer( ply )
 
 	def getPlayerByID( self, id ):
-		FoundPlayer = None
 		for ply in self.getPlayers():
 			if ply.getID() == id:
-				FoundPlayer = ply
-		if FoundPlayer is None:
-			return None
-		else:
-			return FoundPlayer
+				return ply
 
 class Player( object ):
-	def __init__( self, id, points ):
+	def __init__( self, id ):
 		self.id = id
-		self.points = points
 
 	def getID( self ):
 		return self.id
 
 	def getPoints( self ):
-		return self.points
+		readfile = pointshop.getJSON( str( self.id ) )
+		return readfile["points"]
 	
 	def addPoints( self, points ):
-		self.points += points
+		readfile = pointshop.getJSON( str( self.id ) )
+		readfile["points"] += points
+		pointshop.writeJSON( str( self.id ), readfile )
 
 	def removePoints( self, points ):
-		self.points -= max( min( self.points, float( 'inf' ) ), 0 )
+		readfile = pointshop.getJSON( str( self.id ) )
+		readfile["points"] -= max( min( points, float( 'inf' ) ), 0 )
+		pointshop.writeJSON( str( self.id ), readfile )
