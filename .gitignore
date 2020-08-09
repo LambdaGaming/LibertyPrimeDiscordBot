@@ -3,6 +3,9 @@
 token.txt
 whitelist.txt
 
+# Bot data
+prime/data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,7 +1,7 @@
 import discord
 import random
 import config
-from games import wof
+from games import wof, pointshop
 
 config.init()
 
@@ -35,6 +35,7 @@ class MyClient( discord.Client ):
 		if message.author.bot: return
 		lower = message.content.lower()
 
+		await pointshop.checkChatMessage( message )
 		await wof.checkChatMessage( message ) # Check to see if the chat sent is for a minigame
 
 		if not config.GameActive:
