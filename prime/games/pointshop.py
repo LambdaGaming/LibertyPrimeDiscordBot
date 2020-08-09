@@ -80,6 +80,7 @@ async def checkChatMessage( message ):
 		idint = int( split[1] )
 		if 1 in range( -len( split ), len( split ) ) and not split[1].isalpha() and idint in PointshopConfig:
 			author = str( message.author.id )
+			readfile = getJSON( author )
 			price = PointshopConfig[idint]["price"]
 			name = PointshopConfig[idint]["name"]
 			if readfile["points"] < price:
