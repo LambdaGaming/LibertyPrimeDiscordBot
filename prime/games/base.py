@@ -20,12 +20,28 @@ class GameBase( object ):
 			if ply.getID() == id:
 				return ply
 
+	def getScores( self, guild ):
+		finalstr = "N/A"
+		for ply in self.getPlayers():
+			if self.getPlayers().index( ply ) == 0:
+				finalstr = guild.get_member( ply.getID() ).name + ": " + str( ply.getScore() ) + " point(s)"
+			else:
+				finalstr += ", " + guild.get_member( ply.getID() ).name + ": " + str( ply.getScore() ) + " point(s)"
+		return finalstr
+
 class Player( object ):
-	def __init__( self, id ):
+	def __init__( self, id, score ):
 		self.id = id
+		self.score = score
 
 	def getID( self ):
 		return self.id
+
+	def getScore( self ):
+		return self.score
+
+	def setScore( self, points ):
+		self.score += points
 
 	def getPoints( self ):
 		readfile = pointshop.getJSON( str( self.id ) )
@@ -35,8 +51,10 @@ class Player( object ):
 		readfile = pointshop.getJSON( str( self.id ) )
 		readfile["points"] += points
 		pointshop.writeJSON( str( self.id ), readfile )
+		self.setScore( points )
 
 	def removePoints( self, points ):
 		readfile = pointshop.getJSON( str( self.id ) )
 		readfile["points"] -= max( min( points, float( 'inf' ) ), 0 )
 		pointshop.writeJSON( str( self.id ), readfile )
+		self.setScore( -points )

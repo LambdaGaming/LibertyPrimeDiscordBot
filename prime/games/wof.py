@@ -82,8 +82,8 @@ class WoF( base.GameBase ):
 		return "`" + word + "`"
 
 	class WoF_Player( base.Player ):
-		def __init__( self, id, tries, correct ):
-			super().__init__( id )
+		def __init__( self, id, score, tries, correct ):
+			super().__init__( id, score )
 			self.tries = tries
 			self.correct = correct
 
@@ -114,7 +114,7 @@ async def checkChatMessage( message ):
 	global WoFActive
 	if WoFActive:
 		if split[0] == "!wof":
-			WoFGame.createPlayer( WoF.WoF_Player( message.author.id, 5, 0 ) )
+			WoFGame.createPlayer( WoF.WoF_Player( message.author.id, 0, 5, 0 ) )
 			MessagePlayer = WoFGame.getPlayerByID( message.author.id )
 			if 1 not in range( -len( split ), len( split ) ) or split[1] == " ":
 				await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword, buyguesses" )
@@ -160,10 +160,10 @@ async def checkChatMessage( message ):
 				if not allowed:
 					await message.channel.send( message.author.name + ", you do not have permission to use the end command." )
 					return
+				await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations.\nPlayer scores from last game: " + WoFGame.getScores( message.guild ) )
 				del WoFGame
 				WoFActive = False
 				config.GameActive = False
-				await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations." )
 			elif split[1] == "nextword":
 				whitelist = open( "settings/whitelist.txt", "r" )
 				allowed = False
