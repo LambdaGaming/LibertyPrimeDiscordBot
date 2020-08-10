@@ -2,6 +2,7 @@ import config
 import discord
 import json
 import os
+from games import base
 
 PointshopConfig = {
 	1 : { # Item ID
@@ -101,3 +102,36 @@ async def checkChatMessage( message ):
 			await message.channel.send( message.author.name + ", you have not purchased anything." )
 			return
 		await message.channel.send( message.author.name + ", you have purchased the following items: " + listItems( readfile["purchased"] ) )
+	elif split[0] == "!addpoints":
+		whitelist = open( "settings/whitelist.txt", "r" )
+		allowed = False
+		for ids in whitelist:
+			if ids == str( message.author.id ):
+				allowed = True
+		if not allowed:
+			await message.channel.send( message.author.name + ", you do not have permission to use the addpoints command." )
+			return
+		if 1 in range( -len( split ), len( split ) ) and split[1].isdigit() and 2 in range( -len( split ), len( split ) ) and split[2].isdigit():
+			plytemp = base.Player( int( split[1] ), 0 )
+			plytemp.addPoints( int( split[2] ) )
+			del plytemp
+			await message.channel.send( message.author.name + " gave " + message.guild.get_member( int( split[1] ) ).name + " " + split[2] + " point(s)." )
+		else:
+			await message.channel.send( "Usage of addpoints command: '!addpoints (user id) (amount)" )
+	elif split[0] == "!removepoints":
+		whitelist = open( "settings/whitelist.txt", "r" )
+		allowed = False
+		for ids in whitelist:
+			if ids == str( message.author.id ):
+				allowed = True
+		if not allowed:
+			await message.channel.send( message.author.name + ", you do not have permission to use the addpoints command." )
+			return
+		if 1 in range( -len( split ), len( split ) ) and split[1].isdigit() and 2 in range( -len( split ), len( split ) ) and split[2].isdigit():
+			plytemp = base.Player( int( split[1] ), 0 )
+			plytemp.removePoints( int( split[2] ) )
+			del plytemp
+			await message.channel.send( message.author.name + " took " + split[2] + " point(s) from " + message.guild.get_member( int( split[1] ) ).name + "." )
+		else:
+			await message.channel.send( "Usage of addpoints command: '!removepoints (user id) (amount)" )
+		
