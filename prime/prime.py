@@ -6,6 +6,7 @@ from discord.ext import commands
 config.init()
 bot = commands.Bot( command_prefix = "!" )
 
+AllowedChannels = [ "prime-minigames", "bot-testing" ]
 Cogs = [ "games.pointshop", "games.wof" ]
 BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao", "castro", "bernie", "kim", "korea", "california", "red", "cyka", "blyat", "communist", "gulag", "chinese", "vietnamese", "korean", "californian", "reds", "communists", "gulags", "vodkas", "blizzard" ]
 Quotes = [
@@ -45,7 +46,10 @@ async def on_message( message ):
 			if item in lower:
 				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ].upper() )
 				return
-	await bot.process_commands( message )
+	for allowed in AllowedChannels:
+		if allowed == message.channel.name:
+			await bot.process_commands( message )
+			break
 
 @bot.event
 async def on_command_error( ctx, error ):
@@ -53,6 +57,46 @@ async def on_command_error( ctx, error ):
 		await ctx.send( "Missing argument(s) for " + ctx.message.content )
 	if isinstance( error, commands.MissingPermissions ):
 		await ctx.send( "You don't have permission to use this command." )
+
+@bot.event
+async def on_guild_join( guild ):
+	await guild.create_text_channel( "prime-minigames" )
+	channel = discord.utils.find( lambda x: x.name == "prime-minigames", guild.text_channels )
+	if channel:
+		await channel.send( "Use this channel for playing games hosted by Liberty Prime. Type !primehelp for more info." )
+
+@bot.command()
+async def primehelp( ctx ):
+	dmembed = discord.Embed( title = "Liberty Prime Help", description = "Below is a full list of commands you can use to interact with Liberty Prime, including some you may not have permissions for.", color = 0xff5900 )
+	dmembed.add_field(
+		name = "Pointshop:",
+		value =
+		"""
+		!pointshop - Displays the pointshop.
+		!pointshop buy (item id) - Purchases the pointshop item corresponding to the given ID.
+		!pointshop points - Displays the total amount of points you currently have.
+		!pointshop purchased - Displays the names of all of the items you currently own.
+		!pointshop addpoints (member) (amount) - Admin only. Gives points to the specified user.
+		!pointshop removepoints (member) (amount) - Admin only. Removes points from the specified user.
+		""",
+		inline = False
+	)
+	dmembed.add_field(
+		name = "Wheel of Fortune:",
+		value =
+		"""
+		!wof - Displays list of available Wheel of Fortune commands.
+		!wof guessletter (letter) - Inputs a letter guess for the current word.
+		!wof guessword (word) - Inputs a guess for the whole word.
+		!wof buyguesses - Gives the player 3 extra letter guesses at the cost of 1 point.
+		!wof start - Admin only. Starts a new game of Wheel of Fortune.
+		!wof end - Admin only. Ends the current Wheel of Fortune game.
+		!wof nextword - Admin only. Forces the word to change to a new one and resets guessed letters.
+		""",
+		inline = False
+	)
+	dmembed.add_field( name = "Misc:", value = "!primehelp - Displays this help message.", inline = False )
+	await ctx.message.author.send( embed = dmembed )
 
 if __name__ == "__main__":
 	try:

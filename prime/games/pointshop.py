@@ -76,7 +76,7 @@ class Pointshop( commands.Cog ):
 		shopembed = discord.Embed( title = "Liberty Prime's Pointshop", description = "Use !pointshop buy [item number] to buy items for the servers using points earned from minigames.", color = 0xff5900 )
 		for k,v in PointshopConfig.items():
 			shopembed.add_field( name = "[" + str( k ) + "] " + v["name"], value = "Price: " + str( v["price"] ) + "\nDescription: " + v["desc"], inline = False )
-		await ctx.send( embed = shopembed )
+		await ctx.message.author.send( embed = shopembed )
 
 	@pointshop.command()
 	async def buy( self, ctx, arg1 ):
