@@ -6,6 +6,8 @@ whitelist.txt
 # Bot data
 prime/data/
 
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

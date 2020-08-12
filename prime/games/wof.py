@@ -1,8 +1,9 @@
-import config
 import requests
 import json
 import random
-from games import base
+import asyncio
+from games import config, base
+from discord.ext import commands
 
 """
 	For now, this is going to be a very simplified version of Wheel of Fortune that
@@ -33,6 +34,7 @@ def getRandomWord():
 	nextWord = random.choice( list( url ) )
 	return nextWord
 
+global WoFActive
 WoFActive = False
 class WoF( base.GameBase ):
 	def __init__( self, players, word, letters ):
@@ -108,102 +110,115 @@ class WoF( base.GameBase ):
 		def getCorrect( self ):
 			return self.correct
 
-async def checkChatMessage( message ):
-	split = message.content.split( " " )
-	global WoFGame
-	global WoFActive
-	if WoFActive:
-		if split[0] == "!wof":
-			WoFGame.createPlayer( WoF.WoF_Player( message.author.id, 0, 5, 0 ) )
-			MessagePlayer = WoFGame.getPlayerByID( message.author.id )
-			if 1 not in range( -len( split ), len( split ) ) or split[1] == " ":
-				await message.channel.send( "List of available Wheel of Fortune commands: guessletter, guessword, end, nextword, buyguesses" )
-			elif split[1] == "guessletter":
-				if 2 not in range( -len( split ), len( split ) ) or split[2] == " " or not split[2].isalpha() or len( split[2] ) > 1:
-					await message.channel.send( "Please input a single letter for the guessletter command." )
-					return
-				if split[2] in WoFGame.getLetters():
-					await message.channel.send( "Letter '" + split[2].upper() + "' has already been guessed." )
-					return
-				if MessagePlayer.outOfTries():
-					await message.channel.send( message.author.name + ", you are out of letter guesses!" )
-					return
-				if split[2] in WoFGame.getWord():
-					WoFGame.addLetter( split[2] )
-					MessagePlayer.addCorrect( 1 )
-					await message.channel.send( message.author.name + " has guessed a letter correctly!\nGuessed letters so far: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
-					if MessagePlayer.getCorrect() >= 3:
-						MessagePlayer.addPoints( 1 )
-						MessagePlayer.setCorrect( 0 )
-						await message.channel.send( message.author.name + " has guessed 3 correct letters and earned 1 point!" )
-				else:
-					MessagePlayer.removeTry()
-					await message.channel.send( "Letter '" + split[2].upper() + "' is not in this word. " + message.author.name + " has " + str( MessagePlayer.getTries() ) + " guesses left." )
-			elif split[1] == "guessword":
-				if 2 not in range( -len( split ), len( split ) ) or split[2] == " " or not split[2].isalpha():
-					await message.channel.send( "Please input a word without numbers or special characters." )
-					return
-				if split[2].lower() == WoFGame.getWord().lower():
-					await message.channel.send( message.author.name + " has guessed the correct word and received 1 point!" )
-					MessagePlayer.addPoints( 1 )
-					WoFGame.nextWord()
-					await message.channel.send( "Next word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
-				else:
-					MessagePlayer.removePoints( 1 )
-					await message.channel.send( message.author.name + " has incorrectly guessed the word and lost 1 point!" )
-			elif split[1] == "end":
-				whitelist = open( "settings/whitelist.txt", "r" )
-				allowed = False
-				for ids in whitelist:
-					if ids == str( message.author.id ):
-						allowed = True
-				if not allowed:
-					await message.channel.send( message.author.name + ", you do not have permission to use the end command." )
-					return
-				await message.channel.send( "Wheel of Fortune has ended. Returning to normal operations.\nPlayer scores from last game: " + WoFGame.getScores( message.guild ) )
-				del WoFGame
-				WoFActive = False
-				config.GameActive = False
-			elif split[1] == "nextword":
-				whitelist = open( "settings/whitelist.txt", "r" )
-				allowed = False
-				for ids in whitelist:
-					if ids == str( message.author.id ):
-						allowed = True
-				if not allowed:
-					await message.channel.send( message.author.name + ", you do not have permission to use the nextword command." )
-					return
-				WoFGame.nextWord()
-				await message.channel.send( "Word has been forcibly changed to " + WoFGame.getFormattedWord( WoFGame.getWord() ) + "." )
-			elif split[1] == "buyguesses":
-				if MessagePlayer.getTries() > 0:
-					await message.channel.send( message.author.name + ", you still have guesses remaining. You don't need to buy more." )
-					return
-				if MessagePlayer.getPoints() < 1:
-					await message.channel.send( message.author.name + ", you don't have enough points to buy more guesses." )
-					return
-				MessagePlayer.removePoints( 1 )
-				MessagePlayer.setTries( 3 )
-				await message.channel.send( message.author.name + " has purchased 3 more guesses for 1 point." )
-	else:
-		if split[0] == "!wof":
-			if 1 not in range( -len( split ), len( split ) ) or split[1] == " ":
-				await message.channel.send( "List of available Wheel of Fortune commands: start" )
-				return
-			if split[1] == "start":
-				whitelist = open( "settings/whitelist.txt", "r" )
-				allowed = False
-				for ids in whitelist:
-					if ids == str( message.author.id ):
-						allowed = True
-				if not allowed:
-					await message.channel.send( message.author.name + ", you do not have permission to use the start command." )
-					return
-				if config.GameActive:
-					await message.channel.send( "Wheel of fortune cannot be activated at this time. Another game is currently in progress." )
-					return
-				try:
-					WoFGame = WoF( [], getRandomWord(), [] )
-					await message.channel.send( "WHEEL OF FORTUNE MODE ACTIVATED\nWord: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
-				except Exception as e:
-					await message.channel.send( "Something went wrong while choosing a random word: " + str( e ) )
+class WoFCommands( commands.Cog ):
+	def __init__( self, bot ):
+		self.bot = bot
+
+	def initPlayer( self, ctx ):
+		global MessagePlayer
+		WoFGame.createPlayer( WoF.WoF_Player( ctx.message.author.id, 0, 5, 0 ) )
+		MessagePlayer = WoFGame.getPlayerByID( ctx.message.author.id )
+
+	@commands.group( invoke_without_command = True, ignore_extra = True )
+	async def wof( self, ctx ):
+		await ctx.send( "List of available Wheel of Fortune commands: start, guessletter, guessword, end, nextword, buyguesses" )
+
+	@wof.command()
+	async def guessletter( self, ctx, arg1 ):
+		if not WoFActive:
+			await ctx.send( "Wheel of Fortune is currently not active." )
+			return
+		if not arg1.isalpha() or len( arg1 ) > 1:
+			await ctx.send( "Please input a single letter for the guessletter command." )
+			return
+		if arg1.lower() in WoFGame.getLetters():
+			await ctx.send( "Letter '" + arg1.upper() + "' has already been guessed." )
+			return
+		if MessagePlayer.outOfTries():
+			await ctx.send( ctx.message.author.name + ", you are out of letter guesses!" )
+			return
+		self.initPlayer( ctx )
+		if arg1 in WoFGame.getWord():
+			WoFGame.addLetter( arg1 )
+			MessagePlayer.addCorrect( 1 )
+			await ctx.send( ctx.message.author.name + " has guessed a letter correctly!\nGuessed letters so far: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+			if MessagePlayer.getCorrect() >= 3:
+				MessagePlayer.addPoints( 1 )
+				MessagePlayer.setCorrect( 0 )
+				await ctx.send( ctx.message.author.name + " has guessed 3 correct letters and earned 1 point!" )
+		else:
+			MessagePlayer.removeTry()
+			await ctx.send( "Letter '" + arg1.upper() + "' is not in this word. " + ctx.message.author.name + " has " + str( MessagePlayer.getTries() ) + " guesses left." )
+
+	@wof.command()
+	async def guessword( self, ctx, arg1 ):
+		if not WoFActive:
+			await ctx.send( "Wheel of Fortune is currently not active." )
+			return
+		if not arg1.isalpha():
+			await ctx.send( "Please input a word without numbers or special characters." )
+			return
+		self.initPlayer( ctx )
+		if arg1.lower() == WoFGame.getWord().lower():
+			await ctx.send( ctx.message.author.name + " has guessed the correct word and received 1 point!" )
+			MessagePlayer.addPoints( 1 )
+			WoFGame.nextWord()
+			await ctx.send( "Next word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+		else:
+			MessagePlayer.removePoints( 1 )
+			await ctx.send( ctx.message.author.name + " has incorrectly guessed the word and lost 1 point!" )
+
+	@commands.has_permissions( administrator = True )
+	@wof.command()
+	async def end( self, ctx ):
+		global WoFActive
+		global WoFGame
+		if not WoFActive:
+			await ctx.send( "Wheel of Fortune is currently not active." )
+			return
+		await ctx.send( "Wheel of Fortune has ended. Returning to normal operations.\nPlayer scores from last game: " + WoFGame.getScores( ctx.message.guild ) )
+		del WoFGame
+		WoFActive = False
+		config.GameActive = False
+
+	@commands.has_permissions( administrator = True )
+	@wof.command()
+	async def nextword( self, ctx ):
+		if not WoFActive:
+			await ctx.send( "Wheel of Fortune is currently not active." )
+			return
+		WoFGame.nextWord()
+		await ctx.send( "Word has been forcibly changed. New word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+
+	@wof.command()
+	async def buyguesses( self, ctx ):
+		if not WoFActive:
+			await ctx.send( "Wheel of Fortune is currently not active." )
+			return
+		if MessagePlayer.getTries() > 0:
+			await ctx.send( ctx.message.author.name + ", you still have guesses remaining. You don't need to buy more." )
+			return
+		if MessagePlayer.getPoints() < 1:
+			await ctx.send( ctx.message.author.name + ", you don't have enough points to buy more guesses." )
+			return
+		self.initPlayer( ctx )
+		MessagePlayer.removePoints( 1 )
+		MessagePlayer.setTries( 3 )
+		await ctx.send( ctx.message.author.name + " has purchased 3 more guesses for 1 point." )
+
+	@commands.has_permissions( administrator = True )
+	@wof.command()
+	async def start( self, ctx ):
+		if config.GameActive:
+			await ctx.send( "Wheel of fortune cannot be activated at this time. Another game is currently in progress." )
+			return
+		try:
+			global WoFGame
+			WoFGame = WoF( [], getRandomWord(), [] )
+			self.initPlayer( ctx )
+			await ctx.send( "WHEEL OF FORTUNE MODE ACTIVATED\nWord: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+		except Exception as e:
+			await ctx.send( "Something went wrong while choosing a random word: " + str( e ) )
+
+def setup( bot ):
+	bot.add_cog( WoFCommands( bot ) )

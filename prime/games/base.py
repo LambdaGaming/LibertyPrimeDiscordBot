@@ -12,7 +12,11 @@ class GameBase( object ):
 
 	def createPlayer( self, ply ):
 		plyexists = False
-		if ply not in self.getPlayers():
+		for player in self.getPlayers():
+			if player.getID() == ply.id:
+				plyexists = True
+				break
+		if not plyexists:
 			self.addPlayer( ply )
 
 	def getPlayerByID( self, id ):

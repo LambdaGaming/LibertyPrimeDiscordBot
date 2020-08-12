@@ -1,8 +1,8 @@
-import config
 import discord
 import json
 import os
-from games import base
+from games import config, base
+from discord.ext import commands
 
 PointshopConfig = {
 	1 : { # Item ID
@@ -64,74 +64,75 @@ def listItems( table ):
 			finalstr += ", " + PointshopConfig[item]["name"]
 	return finalstr
 
-async def checkChatMessage( message ):
-	split = message.content.split( " " )
-	if split[0] == "!pointshop":
+class Pointshop( commands.Cog ):
+	def __init__( self, bot ):
+		self.bot = bot
+
+	@commands.group( invoke_without_command = True )
+	async def pointshop( self, ctx ):
 		if config.GameActive:
-			message.channel.send( "Please wait until the current game is over before accessing the pointshop." )
+			ctx.send( "Please wait until the current game is over before accessing the pointshop." )
 			return
-		shopembed = discord.Embed( title = "Liberty Prime's Pointshop", description = "Use !buy [item number] to buy items for the servers using points earned from minigames.", color = 0xff5900 )
+		shopembed = discord.Embed( title = "Liberty Prime's Pointshop", description = "Use !pointshop buy [item number] to buy items for the servers using points earned from minigames.", color = 0xff5900 )
 		for k,v in PointshopConfig.items():
 			shopembed.add_field( name = "[" + str( k ) + "] " + v["name"], value = "Price: " + str( v["price"] ) + "\nDescription: " + v["desc"], inline = False )
-		await message.channel.send( embed = shopembed )
-	elif split[0] == "!buy":
+		await ctx.send( embed = shopembed )
+
+	@pointshop.command()
+	async def buy( self, ctx, arg1 ):
 		if config.GameActive:
-			message.channel.send( "Please wait until the current game is over before buying something from the pointshop." )
+			ctx.send( "Please wait until the current game is over before buying something from the pointshop." )
 			return
-		idint = int( split[1] )
-		if 1 in range( -len( split ), len( split ) ) and not split[1].isalpha() and idint in PointshopConfig:
-			author = str( message.author.id )
+		idint = int( arg1 )
+		if not arg1.isalpha() and idint in PointshopConfig:
+			author = str( ctx.message.author.id )
 			readfile = getJSON( author )
 			price = PointshopConfig[idint]["price"]
 			name = PointshopConfig[idint]["name"]
 			if readfile["points"] < price:
-				await message.channel.send( message.author.name + ", you don't have enough points to purchase the item '" + name + "'." )
+				await ctx.send( ctx.message.author.name + ", you don't have enough points to purchase the item '" + name + "'." )
 				return
 			readfile["points"] -= price
 			readfile["purchased"].append( idint )
 			writeJSON( author, readfile )
-			await message.channel.send( message.author.name + ", you have purchased '" + name + "' for " + str( price ) + " point(s)." )
+			await ctx.send( ctx.message.author.name + ", you have purchased '" + name + "' for " + str( price ) + " point(s)." )
 		else:
-			await message.channel.send( "Please enter a valid number as the item ID." )
-	elif split[0] == "!points":
-		readfile = getJSON( str( message.author.id ) )
-		await message.channel.send( message.author.name + ", you currently have " + str( readfile["points"] ) + " point(s)." )
-	elif split[0] == "!purchased":
-		readfile = getJSON( str( message.author.id ) )
+			await ctx.send( "Please enter a valid number as the item ID." )
+
+	@pointshop.command()
+	async def points( self, ctx ):
+		readfile = getJSON( str( ctx.message.author.id ) )
+		await ctx.send( ctx.message.author.name + ", you currently have " + str( readfile["points"] ) + " point(s)." )
+
+	@pointshop.command()
+	async def purchased( self, ctx ):
+		readfile = getJSON( str( ctx.message.author.id ) )
 		if not readfile["purchased"]:
-			await message.channel.send( message.author.name + ", you have not purchased anything." )
+			await ctx.send( ctx.message.author.name + ", you have not purchased anything." )
 			return
-		await message.channel.send( message.author.name + ", you have purchased the following items: " + listItems( readfile["purchased"] ) )
-	elif split[0] == "!addpoints":
-		whitelist = open( "settings/whitelist.txt", "r" )
-		allowed = False
-		for ids in whitelist:
-			if ids == str( message.author.id ):
-				allowed = True
-		if not allowed:
-			await message.channel.send( message.author.name + ", you do not have permission to use the addpoints command." )
-			return
-		if 1 in range( -len( split ), len( split ) ) and split[1].isdigit() and 2 in range( -len( split ), len( split ) ) and split[2].isdigit():
-			plytemp = base.Player( int( split[1] ), 0 )
-			plytemp.addPoints( int( split[2] ) )
+		await ctx.send( ctx.message.author.name + ", you have purchased the following items: " + listItems( readfile["purchased"] ) )
+
+	@commands.has_permissions( administrator = True )
+	@pointshop.command()
+	async def addpoints( self, ctx, arg1: discord.User, arg2 ):
+		if isinstance( arg1, discord.User ) and arg2.isdigit():
+			plytemp = base.Player( arg1.id, 0 )
+			plytemp.addPoints( int( arg2 ) )
 			del plytemp
-			await message.channel.send( message.author.name + " gave " + message.guild.get_member( int( split[1] ) ).name + " " + split[2] + " point(s)." )
+			await ctx.send( ctx.message.author.name + " gave " + arg1.name + " " + arg2 + " point(s)." )
 		else:
-			await message.channel.send( "Usage of addpoints command: '!addpoints (user id) (amount)" )
-	elif split[0] == "!removepoints":
-		whitelist = open( "settings/whitelist.txt", "r" )
-		allowed = False
-		for ids in whitelist:
-			if ids == str( message.author.id ):
-				allowed = True
-		if not allowed:
-			await message.channel.send( message.author.name + ", you do not have permission to use the addpoints command." )
-			return
-		if 1 in range( -len( split ), len( split ) ) and split[1].isdigit() and 2 in range( -len( split ), len( split ) ) and split[2].isdigit():
-			plytemp = base.Player( int( split[1] ), 0 )
-			plytemp.removePoints( int( split[2] ) )
+			await ctx.send( "Usage of addpoints command: !addpoints (member) (amount)" )
+
+	@commands.has_permissions( administrator = True )
+	@pointshop.command()
+	async def removepoints( self, ctx, arg1: discord.User, arg2 ):
+		if isinstance( arg1, discord.User ) and arg2.isdigit():
+			plytemp = base.Player( arg1.id, 0 )
+			plytemp.removePoints( int( arg2 ) )
 			del plytemp
-			await message.channel.send( message.author.name + " took " + split[2] + " point(s) from " + message.guild.get_member( int( split[1] ) ).name + "." )
+			await ctx.send( ctx.message.author.name + " took " + arg2 + " point(s) from " + arg1.name + "." )
 		else:
-			await message.channel.send( "Usage of addpoints command: '!removepoints (user id) (amount)" )
-		
+			await ctx.send( "Usage of removepoints command: !removepoints (member) (amount)" )
+
+def setup( bot ):
+	bot.add_cog( Pointshop( bot ) )
