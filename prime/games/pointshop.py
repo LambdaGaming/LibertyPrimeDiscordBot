@@ -90,27 +90,27 @@ class Pointshop( commands.Cog ):
 			price = PointshopConfig[idint]["price"]
 			name = PointshopConfig[idint]["name"]
 			if readfile["points"] < price:
-				await ctx.send( ctx.message.author.name + ", you don't have enough points to purchase the item '" + name + "'." )
+				await ctx.send( "<@" + author + ">\nYou don't have enough points to purchase the item '" + name + "'." )
 				return
 			readfile["points"] -= price
 			readfile["purchased"].append( idint )
 			writeJSON( author, readfile )
-			await ctx.send( ctx.message.author.name + ", you have purchased '" + name + "' for " + str( price ) + " point(s)." )
+			await ctx.send( "<@" + author + ">\nYou have purchased '" + name + "' for " + str( price ) + " point(s)." )
 		else:
 			await ctx.send( "Please enter a valid number as the item ID." )
 
 	@pointshop.command()
 	async def points( self, ctx ):
 		readfile = getJSON( str( ctx.message.author.id ) )
-		await ctx.send( ctx.message.author.name + ", you currently have " + str( readfile["points"] ) + " point(s)." )
+		await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou currently have " + str( readfile["points"] ) + " point(s)." )
 
 	@pointshop.command()
 	async def purchased( self, ctx ):
 		readfile = getJSON( str( ctx.message.author.id ) )
 		if not readfile["purchased"]:
-			await ctx.send( ctx.message.author.name + ", you have not purchased anything." )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou have not purchased anything." )
 			return
-		await ctx.send( ctx.message.author.name + ", you have purchased the following items: " + listItems( readfile["purchased"] ) )
+		await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou have purchased the following items: " + listItems( readfile["purchased"] ) )
 
 	@commands.has_permissions( administrator = True )
 	@pointshop.command()
@@ -119,7 +119,7 @@ class Pointshop( commands.Cog ):
 			plytemp = base.Player( arg1.id, 0 )
 			plytemp.addPoints( int( arg2 ) )
 			del plytemp
-			await ctx.send( ctx.message.author.name + " gave " + arg1.name + " " + arg2 + " point(s)." )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + "> gave <@" + str( arg1.id ) + "> " + arg2 + " point(s)." )
 		else:
 			await ctx.send( "Usage of addpoints command: !addpoints (member) (amount)" )
 
@@ -130,7 +130,7 @@ class Pointshop( commands.Cog ):
 			plytemp = base.Player( arg1.id, 0 )
 			plytemp.removePoints( int( arg2 ) )
 			del plytemp
-			await ctx.send( ctx.message.author.name + " took " + arg2 + " point(s) from " + arg1.name + "." )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + "> took " + arg2 + " point(s) from <@" + str( arg1.id ) + ">." )
 		else:
 			await ctx.send( "Usage of removepoints command: !removepoints (member) (amount)" )
 

@@ -135,20 +135,20 @@ class WoFCommands( commands.Cog ):
 			await ctx.send( "Letter '" + arg1.upper() + "' has already been guessed." )
 			return
 		if MessagePlayer.outOfTries():
-			await ctx.send( ctx.message.author.name + ", you are out of letter guesses!" )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou are out of letter guesses!" )
 			return
 		self.initPlayer( ctx )
+		WoFGame.addLetter( arg1 )
 		if arg1 in WoFGame.getWord():
-			WoFGame.addLetter( arg1 )
 			MessagePlayer.addCorrect( 1 )
-			await ctx.send( ctx.message.author.name + " has guessed a letter correctly!\nGuessed letters so far: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + "> has guessed a letter correctly!\nGuessed letters so far: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
 			if MessagePlayer.getCorrect() >= 3:
 				MessagePlayer.addPoints( 1 )
 				MessagePlayer.setCorrect( 0 )
-				await ctx.send( ctx.message.author.name + " has guessed 3 correct letters and earned 1 point!" )
+				await ctx.send( "<@" + str( ctx.message.author.id ) + "> has guessed 3 correct letters and earned 1 point!" )
 		else:
 			MessagePlayer.removeTry()
-			await ctx.send( "Letter '" + arg1.upper() + "' is not in this word. " + ctx.message.author.name + " has " + str( MessagePlayer.getTries() ) + " guesses left." )
+			await ctx.send( "Letter '" + arg1.upper() + "' is not in this word. <@" + str( ctx.message.author.id ) + "> has " + str( MessagePlayer.getTries() ) + " guesses left." )
 
 	@wof.command()
 	async def guessword( self, ctx, arg1 ):
@@ -160,13 +160,13 @@ class WoFCommands( commands.Cog ):
 			return
 		self.initPlayer( ctx )
 		if arg1.lower() == WoFGame.getWord().lower():
-			await ctx.send( ctx.message.author.name + " has guessed the correct word and received 1 point!" )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + "> has guessed the correct word and received 1 point!" )
 			MessagePlayer.addPoints( 1 )
 			WoFGame.nextWord()
 			await ctx.send( "Next word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
 		else:
 			MessagePlayer.removePoints( 1 )
-			await ctx.send( ctx.message.author.name + " has incorrectly guessed the word and lost 1 point!" )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + "> has incorrectly guessed the word and lost 1 point!" )
 
 	@commands.has_permissions( administrator = True )
 	@wof.command()
@@ -196,15 +196,15 @@ class WoFCommands( commands.Cog ):
 			await ctx.send( "Wheel of Fortune is currently not active." )
 			return
 		if MessagePlayer.getTries() > 0:
-			await ctx.send( ctx.message.author.name + ", you still have guesses remaining. You don't need to buy more." )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou still have guesses remaining. You don't need to buy more." )
 			return
 		if MessagePlayer.getPoints() < 1:
-			await ctx.send( ctx.message.author.name + ", you don't have enough points to buy more guesses." )
+			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou don't have enough points to buy more guesses." )
 			return
 		self.initPlayer( ctx )
 		MessagePlayer.removePoints( 1 )
 		MessagePlayer.setTries( 3 )
-		await ctx.send( ctx.message.author.name + " has purchased 3 more guesses for 1 point." )
+		await ctx.send( "<@" + str( ctx.message.author.id ) + "> has purchased 3 more guesses for 1 point." )
 
 	@commands.has_permissions( administrator = True )
 	@wof.command()

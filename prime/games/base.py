@@ -28,9 +28,9 @@ class GameBase( object ):
 		finalstr = "N/A"
 		for ply in self.getPlayers():
 			if self.getPlayers().index( ply ) == 0:
-				finalstr = guild.get_member( ply.getID() ).name + ": " + str( ply.getScore() ) + " point(s)"
+				finalstr = "<@" + str( ply.getID() ) + ">: " + str( ply.getScore() ) + " point(s)"
 			else:
-				finalstr += ", " + guild.get_member( ply.getID() ).name + ": " + str( ply.getScore() ) + " point(s)"
+				finalstr += ", <@" + str( ply.getID() ) + ">: " + str( ply.getScore() ) + " point(s)"
 		return finalstr
 
 class Player( object ):
