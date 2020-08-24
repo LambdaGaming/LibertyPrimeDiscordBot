@@ -1,5 +1,6 @@
 import discord
 import random
+import re
 from games import config
 from discord.ext import commands
 
@@ -27,6 +28,9 @@ Quotes = [
 	"Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
 ]
 
+def findWord( word ):
+	return re.compile( r'\b({0})\b'.format( word ), flags = re.IGNORECASE ).search
+
 @bot.event
 async def on_ready():
 	randfallout = str( random.randint( 3, 4 ) )
@@ -43,7 +47,7 @@ async def on_message( message ):
 			await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
 			return
 		for item in BadWords:
-			if item in lower:
+			if findWord( item )( message.content ) is not None:
 				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ].upper() )
 				return
 	for allowed in AllowedChannels:
