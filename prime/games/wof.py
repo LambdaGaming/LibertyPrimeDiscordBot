@@ -187,8 +187,9 @@ class WoFCommands( commands.Cog ):
 		if not WoFActive:
 			await ctx.send( "Wheel of Fortune is currently not active." )
 			return
+		oldword = WoFGame.getWord()
 		WoFGame.nextWord()
-		await ctx.send( "Word has been forcibly changed. New word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
+		await ctx.send( "The word has been forcibly changed. It was `" + oldword + "`. New word: " + WoFGame.getFormattedWord( WoFGame.getWord() ) )
 
 	@wof.command()
 	async def buyguesses( self, ctx ):
@@ -206,7 +207,6 @@ class WoFCommands( commands.Cog ):
 		MessagePlayer.setTries( 3 )
 		await ctx.send( "<@" + str( ctx.message.author.id ) + "> has purchased 3 more guesses for 1 point." )
 
-	@commands.has_permissions( administrator = True )
 	@wof.command()
 	async def start( self, ctx ):
 		if config.GameActive:
