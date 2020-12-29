@@ -14,7 +14,6 @@ Quotes = [
 	"Weapons: hot.",
 	"Mission: the destruction of any and all Chinese communists.",
 	"America will never fall to communist invasion.",
-	"Obstruction detected. Composition: titanium alloy supplemented by photonic resonance barrier.",
 	"Probability of mission hindrance: zero percent.",
 	"Democracy.... is non-negotiable.",
 	"Death is a preferable alternative to communism.",
@@ -47,7 +46,7 @@ async def on_message( message ):
 			await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
 			return
 		for item in BadWords:
-			if findWord( item )( message.content ) is not None:
+			if findWord( item )( lower ) is not None:
 				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ].upper() )
 				return
 	for allowed in AllowedChannels:
