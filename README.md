@@ -5,3 +5,7 @@ Upgraded Python version of my Liberty Prime Discord Bot. The original JavaScript
 If you want to host this bot yourself, read the notes below. (This assumes you know the basics of creating a bot and installing Python.)
 
 - You must put the bot token in prime/settings/token.txt. See token.txt.template in the same folder for more info.
+- You will need to install the `requests` module for Python.
+
+# Issues & Pull Requests
+ If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
