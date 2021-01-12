@@ -96,7 +96,7 @@ class WoF( base.GameBase ):
 			self.tries = tries
 
 		def removeTry( self ):
-			self.tries -= max( min( 1, float( 'inf' ) ), 0 )
+			self.tries = max( min( self.tries - 1, float( 'inf' ) ), 0 )
 
 		def outOfTries( self ):
 			return self.tries <= 0
