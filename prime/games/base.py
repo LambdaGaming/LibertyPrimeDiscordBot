@@ -59,6 +59,8 @@ class Player( object ):
 
 	def removePoints( self, points ):
 		readfile = pointshop.getJSON( str( self.id ) )
-		readfile["points"] -= max( min( points, float( 'inf' ) ), 0 )
+		clamppoints = max( min( -points, float( 'inf' ) ), 0 )
+		print(clamppoints)
+		readfile["points"] += clamppoints
 		pointshop.writeJSON( str( self.id ), readfile )
-		self.setScore( -points )
+		self.setScore( clamppoints )

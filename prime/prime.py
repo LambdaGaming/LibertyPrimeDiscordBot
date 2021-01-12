@@ -11,20 +11,20 @@ AllowedChannels = [ "prime-minigames", "bot-testing" ]
 Cogs = [ "games.pointshop", "games.wof" ]
 BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao", "castro", "bernie", "kim", "korea", "california", "red", "cyka", "blyat", "communist", "gulag", "chinese", "vietnamese", "korean", "californian", "reds", "communists", "gulags", "vodkas", "blizzard" ]
 Quotes = [
-	"Weapons: hot.",
-	"Mission: the destruction of any and all Chinese communists.",
-	"America will never fall to communist invasion.",
-	"Probability of mission hindrance: zero percent.",
-	"Democracy.... is non-negotiable.",
-	"Death is a preferable alternative to communism.",
-	"Communist detected on American soil. Lethal force engaged.",
-	"Tactical assessment: Red Chinese victory-impossible.",
-	"Communism is the very definition of failure.",
-	"Communism is a temporary setback on the road to freedom.",
-	"Embrace democracy or you will be eradicated.",
-	"Democracy will never be defeated.",
-	"Primary Targets: any and all Red Chinese invaders.",
-	"Emergency Communist Acquisition Directive: immediate self destruct. Better dead, than Red."
+	"WEAPONS: HOT.",
+	"MISSION: THE DESTRUCTION OF ANY AND ALL CHINESE COMMUNISTS.",
+	"AMERICA WILL NEVER FALL TO COMMUNIST INVASION.",
+	"PROBABILITY OF MISSION HINDRANCE: ZERO PERCENT.",
+	"DEMOCRACY.... IS NON-NEGOTIABLE.",
+	"DEATH IS A PREFERABLE ALTERNATIVE TO COMMUNISM.",
+	"COMMUNIST DETECTED ON AMERICAN SOIL. LETHAL FORCE ENGAGED.",
+	"TACTICAL ASSESSMENT: RED CHINESE VICTORY-IMPOSSIBLE.",
+	"COMMUNISM IS THE VERY DEFINITION OF FAILURE.",
+	"COMMUNISM IS A TEMPORARY SETBACK ON THE ROAD TO FREEDOM.",
+	"EMBRACE DEMOCRACY OR YOU WILL BE ERADICATED.",
+	"DEMOCRACY WILL NEVER BE DEFEATED.",
+	"PRIMARY TARGETS: ANY AND ALL RED CHINESE INVADERS.",
+	"EMERGENCY COMMUNIST ACQUISITION DIRECTIVE: IMMEDIATE SELF DESTRUCT. BETTER DEAD, THAN RED."
 ]
 
 def findWord( word ):
@@ -47,7 +47,7 @@ async def on_message( message ):
 			return
 		for item in BadWords:
 			if findWord( item )( lower ) is not None:
-				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ].upper() )
+				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ] )
 				return
 	for allowed in AllowedChannels:
 		if allowed == message.channel.name:

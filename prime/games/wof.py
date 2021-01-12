@@ -196,15 +196,12 @@ class WoFCommands( commands.Cog ):
 		if not WoFActive:
 			await ctx.send( "Wheel of Fortune is currently not active." )
 			return
-		if MessagePlayer.getTries() > 0:
-			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou still have guesses remaining. You don't need to buy more." )
-			return
 		if MessagePlayer.getPoints() < 1:
 			await ctx.send( "<@" + str( ctx.message.author.id ) + ">\nYou don't have enough points to buy more guesses." )
 			return
 		self.initPlayer( ctx )
 		MessagePlayer.removePoints( 1 )
-		MessagePlayer.setTries( 3 )
+		MessagePlayer.setTries( MessagePlayer.getTries() + 3 )
 		await ctx.send( "<@" + str( ctx.message.author.id ) + "> has purchased 3 more guesses for 1 point." )
 
 	@wof.command()
