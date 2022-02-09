@@ -9,7 +9,9 @@ bot = commands.Bot( command_prefix = "!" )
 
 AllowedChannels = [ "prime-minigames", "bot-testing" ]
 Cogs = [ "games.pointshop", "games.wof" ]
-BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao", "castro", "bernie", "kim", "korea", "california", "red", "cyka", "blyat", "communist", "gulag", "chinese", "vietnamese", "korean", "californian", "reds", "communists", "gulags", "vodkas", "blizzard" ]
+BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao",
+"castro", "bernie", "kim", "california", "red", "cyka", "blyat", "communist", "gulag", "chinese", "vietnamese", "north korea",
+"californian", "reds", "communists", "gulags", "vodkas", "blizzard", "marx", "marxist" ]
 Quotes = [
 	"WEAPONS: HOT.",
 	"MISSION: THE DESTRUCTION OF ANY AND ALL CHINESE COMMUNISTS.",
