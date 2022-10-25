@@ -5,7 +5,8 @@ from games import config
 from discord.ext import commands
 
 config.init()
-bot = commands.Bot( command_prefix = "!" )
+intents = discord.Intents.all()
+bot = commands.Bot( command_prefix = "!", intents = intents )
 
 AllowedChannels = [ "prime-minigames", "bot-testing" ]
 Cogs = [ "games.pointshop", "games.wof" ]
