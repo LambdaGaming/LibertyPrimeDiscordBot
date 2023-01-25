@@ -8,6 +8,7 @@ config.init()
 intents = discord.Intents.all()
 bot = commands.Bot( command_prefix = "!", intents = intents )
 
+TotalOffenses = 0
 AllowedChannels = [ "prime-minigames", "bot-testing" ]
 Cogs = [ "games.pointshop", "games.wof" ]
 BadWords = [ "communism", "china", "ussr", "stalin", "lenin", "putin", "vodka", "commie", "russia", "cuba", "vietnam", "mao",
@@ -44,13 +45,15 @@ async def on_message( message ):
 	if message.author.bot: return
 	lower = message.content.lower()
 
-	if not config.GameActive:
+	if not config.GameActive and TotalOffenses % 2 == 0:
 		if "hong kong" in lower:
 			await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
+			TotalOffenses += 1
 			return
 		for item in BadWords:
 			if findWord( item )( lower ) is not None:
 				await message.channel.send( Quotes[ random.randint( 0, len( Quotes ) - 1 ) ] )
+				TotalOffenses += 1
 				return
 	for allowed in AllowedChannels:
 		if allowed == message.channel.name:
