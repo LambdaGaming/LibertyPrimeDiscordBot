@@ -44,7 +44,7 @@ async def on_ready():
 async def on_message( message ):
 	if message.author.bot: return
 	lower = message.content.lower()
-
+	global TotalOffenses
 	if not config.GameActive and TotalOffenses % 2 == 0:
 		if "hong kong" in lower:
 			await message.channel.send( "LIBERATE HONG KONG, REVOLUTION OF OUR AGE!" )
